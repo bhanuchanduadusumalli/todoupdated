@@ -121,24 +121,30 @@ app.get("/todos/:todoId/", async (request, response) => {
   const { todoId } = request.params;
   const getTodo = `select * from todo where id=${todoId}`;
   const todo = await db.get(getTodo);
+  console.log(todo);
   response.send(convertTodoDbObjToTodoResponseObj(todo));
 });
 
 //Get request
 app.get("/agenda/", async (request, response) => {
-  const { date } = request.query;
-  const formattedDate = format(new Date(date), "yyyy-MM-dd");
-  //   console.log(formattedDate);
-  //   console.log(typeof formattedDate);
-  //   console.log(formattedDate === "2021-12-12");
-  //   console.log(date);
-  const getAgenda = `select * from todo 
-  where due_date='${formattedDate}'`;
-  const todo = await db.all(getAgenda);
-  //console.log(todo);
-  response.send(
-    todo.map((eachTodo) => convertTodoDbObjToTodoResponseObj(eachTodo))
-  );
+  try {
+    const { date } = request.query;
+    const formattedDate = format(new Date(date), "yyyy-MM-dd");
+    //   console.log(formattedDate);
+    //   console.log(typeof formattedDate);
+    //   console.log(formattedDate === "2021-12-12");
+    //   console.log(date);
+    const getAgenda = `select * from todo 
+        where due_date='${formattedDate}'`;
+    const todo = await db.all(getAgenda);
+    //console.log(todo);
+    response.send(
+      todo.map((eachTodo) => convertTodoDbObjToTodoResponseObj(eachTodo))
+    );
+  } catch (error) {
+    response.status(400);
+    response.send("Invalid Todo Status");
+  }
 });
 
 //Post request
@@ -151,6 +157,56 @@ app.post("/todos/", async (request, response) => {
     values(${id},'${todo}','${priority}','${status}','${category}','${formattedDate}')`;
   await db.run(insertTodo);
   response.send("Todo Successfully Added");
+});
+
+//put request
+app.put("/todos/:todoId/", async (request, response) => {
+  const { todoId } = request.params;
+  const requestBody = request.body;
+  //console.log(status);
+  let updatedColumn = null;
+  switch (true) {
+    case requestBody.status !== undefined:
+      updatedColumn = "Status";
+      break;
+    case requestBody.priority !== undefined:
+      updatedColumn = "Priority";
+      break;
+    case requestBody.todo !== undefined:
+      updatedColumn = "Todo";
+      break;
+    case requestBody.category !== undefined:
+      updatedColumn = "Category";
+      break;
+    case requestBody.dueDate !== undefined:
+      updatedColumn = "Due Date";
+      break;
+  }
+  let previousTodoQuery = `select * from todo where id=${todoId}`;
+  const previousTodo = await db.get(previousTodoQuery);
+  //console.log(preTodo);
+  const {
+    todo = previousTodo.todo,
+    priority = previousTodo.priority,
+    status = previousTodo.status,
+    category = previousTodo.category,
+    dueDate = previousTodo.due_date,
+  } = request.body;
+
+  const updateTodoQuery = `
+    UPDATE
+      todo
+    SET
+      todo='${todo}',
+      priority='${priority}',
+      status='${status}',
+      category='${category}',
+      due_date='${dueDate}'
+    WHERE
+      id = ${todoId};`;
+
+  await db.run(updateTodoQuery);
+  response.send(`${updatedColumn} Updated`);
 });
 
 //delete request

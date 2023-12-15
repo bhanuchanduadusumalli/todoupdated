@@ -26,7 +26,7 @@ GET http://localhost:3001/todos/?category=LEARNING&priority=HIGH
 
 
 ###
-Get http://localhost:3001/todos/2/ 
+Get http://localhost:3001/todos/3/ 
 
 
 ###
@@ -45,6 +45,12 @@ POST http://localhost:3001/todos/
  "category": "HOME",
  "dueDate": "2021-02-22"
 }
+
+
+###
+PUT http://localhost:3001/todos/4/
+
+{ "status": "DONE" }
 
 
 ###
