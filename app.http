@@ -23,3 +23,11 @@ GET http://localhost:3001/todos/?category=HOME
 
 ###
 GET http://localhost:3001/todos/?category=LEARNING&priority=HIGH
+
+
+###
+Get http://localhost:3001/todos/2/ 
+
+
+###
+Get http://localhost:3001/agenda/?date=2021-02-22

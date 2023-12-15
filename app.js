@@ -115,3 +115,28 @@ app.get("/todos/", async (request, response) => {
     data.map((eachTodo) => convertTodoDbObjToTodoResponseObj(eachTodo))
   );
 });
+
+//Get request
+app.get("/todos/:todoId/", async (request, response) => {
+  const { todoId } = request.params;
+  const getTodo = `select * from todo where id=${todoId}`;
+  const todo = await db.get(getTodo);
+  response.send(convertTodoDbObjToTodoResponseObj(todo));
+});
+
+//Get request
+app.get("/agenda/", async (request, response) => {
+  const { date } = request.query;
+  const formattedDate = format(new Date(date), "yyyy-MM-dd");
+  //   console.log(formattedDate);
+  //   console.log(typeof formattedDate);
+  //   console.log(formattedDate === "2021-12-12");
+  //   console.log(date);
+  const getAgenda = `select * from todo 
+  where due_date='${formattedDate}'`;
+  const todo = await db.all(getAgenda);
+  console.log(todo);
+  response.send(
+    todo.map((eachTodo) => convertTodoDbObjToTodoResponseObj(eachTodo))
+  );
+});
