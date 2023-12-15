@@ -31,3 +31,21 @@ Get http://localhost:3001/todos/2/
 
 ###
 Get http://localhost:3001/agenda/?date=2021-02-22
+
+
+###
+POST http://localhost:3001/todos/
+
+
+{
+ "id": 6,
+ "todo": "Finalize event theme",
+ "priority": "LOW",
+ "status": "TO DO",
+ "category": "HOME",
+ "dueDate": "2021-02-22"
+}
+
+
+###
+DELETE http://localhost:3001/todos/2/

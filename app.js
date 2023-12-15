@@ -135,8 +135,30 @@ app.get("/agenda/", async (request, response) => {
   const getAgenda = `select * from todo 
   where due_date='${formattedDate}'`;
   const todo = await db.all(getAgenda);
-  console.log(todo);
+  //console.log(todo);
   response.send(
     todo.map((eachTodo) => convertTodoDbObjToTodoResponseObj(eachTodo))
   );
 });
+
+//Post request
+app.post("/todos/", async (request, response) => {
+  const todoItem = request.body;
+  const { id, todo, priority, status, category, dueDate } = todoItem;
+  //console.log(request.body.todo);
+  const formattedDate = format(new Date(dueDate), "yyyy-MM-dd");
+  const insertTodo = `insert into todo(id,todo,priority,status,category,due_date) 
+    values(${id},'${todo}','${priority}','${status}','${category}','${formattedDate}')`;
+  await db.run(insertTodo);
+  response.send("Todo Successfully Added");
+});
+
+//delete request
+app.delete("/todos/:todoId/", async (request, response) => {
+  const { todoId } = request.params;
+  const deleteTodo = `delete from todo where id=${todoId}`;
+  await db.run(deleteTodo);
+  response.send("Todo Deleted");
+});
+
+module.exports = app;
